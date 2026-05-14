@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Visual Development | Mary Khoury</title>
+    <meta name="description" content="Visual development portfolio page for Mary Khoury." />
+    <link rel="stylesheet" href="styles.css" />
+    <script src="app.js" defer></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Skip to content</a>
+
+    <header class="site-header" data-site-header>
+      <a class="brand" href="index.html">Mary Khoury</a>
+      <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="site-navigation" data-nav-toggle>
+        <span class="sr-only">Open navigation</span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+        <span aria-hidden="true"></span>
+      </button>
+      <nav class="site-nav" id="site-navigation" data-site-nav>
+        <a href="index.html">About</a>
+        <a href="illustration.html">Illustration</a>
+        <a href="visual-development.html" aria-current="page">Visual Development</a>
+        <a href="graphic-design.html">Graphic Design</a>
+      </nav>
+    </header>
+
+    <main id="main-content" class="gallery-page" data-gallery-page="visual-development" data-gallery-title="Visual Development">
+      <section class="page-intro section-wrap narrow">
+        <p class="eyebrow">Portfolio</p>
+        <h1>Visual Development</h1>
+        <p>Add image files to <code>artwork/visual-development</code>. The page will sort them by filename, so <code>1_</code> appears before <code>2_</code>.</p>
+      </section>
+
+      <section class="section-wrap">
+        <div class="status-card" data-gallery-status>Loading artwork from the folder…</div>
+        <div class="gallery-grid" data-gallery-grid aria-live="polite"></div>
+      </section>
+    </main>
+
+    <dialog class="lightbox" data-lightbox aria-label="Artwork preview">
+      <button class="lightbox-close" type="button" data-lightbox-close aria-label="Close preview">×</button>
+      <div class="lightbox-inner">
+        <img data-lightbox-image alt="" />
+        <div class="lightbox-details">
+          <p class="eyebrow" data-lightbox-category></p>
+          <h2 data-lightbox-title></h2>
+          <p data-lightbox-description></p>
+          <p class="lightbox-meta" data-lightbox-meta></p>
+        </div>
+      </div>
+    </dialog>
+
+    <footer class="site-footer">
+      <p>© <span data-current-year></span> Mary Khoury</p>
+      <div class="footer-links">
+        <a href="mailto:marykhoury288@gmail.com">Email</a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noreferrer">Instagram</a>
+      </div>
+    </footer>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+{
+  "artwork/illustration/1_space.jpg": {
+    "title": "Space",
+    "description": "This is a test.",
+    "year": "2026",
+    "medium": "Digital"
+  },
+"artwork/illustration/2_jellyfish1.JPG": {
+    "title": "jellyfish",
+    "description": "This is also a test.",
+    "year": "2026",
+    "medium": "Digital"
+  },
+
+  "artwork/visual-development/1_sample-character-sheet.svg": {
+    "title": "Sample Character Sheet",
+    "description": "This is a placeholder. Delete it after you upload your own visual development files.",
+    "year": "2026",
+    "medium": "Digital"
+  },
+  "artwork/graphic-design/1_sample-poster.svg": {
+    "title": "Sample Poster",
+    "description": "This is a placeholder. Delete it after you upload your own graphic design files.",
+    "year": "2026",
+    "medium": "Digital"
+  }
+}

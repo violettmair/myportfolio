@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1400" role="img" aria-labelledby="title desc">
+  <title id="title">Sample poster placeholder</title>
+  <desc id="desc">A black and white placeholder image for the graphic design gallery.</desc>
+  <rect width="1000" height="1400" fill="#111"/>
+  <rect x="82" y="82" width="836" height="1236" rx="38" fill="#fff"/>
+  <rect x="170" y="180" width="660" height="130" fill="#111"/>
+  <rect x="170" y="370" width="450" height="40" fill="#111"/>
+  <rect x="170" y="445" width="560" height="40" fill="#111"/>
+  <rect x="170" y="520" width="380" height="40" fill="#111"/>
+  <circle cx="500" cy="790" r="190" fill="#111"/>
+  <text x="500" y="1115" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" font-weight="800" fill="#111">Graphic Design</text>
+  <text x="500" y="1200" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#555">replace this file</text>
+</svg>

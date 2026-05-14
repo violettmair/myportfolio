@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1100" role="img" aria-labelledby="title desc">
+  <title id="title">Sample character sheet placeholder</title>
+  <desc id="desc">A black and white placeholder image for the visual development gallery.</desc>
+  <rect width="1500" height="1100" fill="#ffffff"/>
+  <rect x="60" y="60" width="1380" height="980" rx="40" fill="none" stroke="#111" stroke-width="8"/>
+  <g fill="none" stroke="#111" stroke-width="13" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="355" cy="305" r="70"/>
+    <path d="M355 380v260M265 475h180M295 820l60-180 65 180"/>
+    <circle cx="755" cy="305" r="70"/>
+    <path d="M755 380v260M665 475h180M695 820l60-180 65 180"/>
+    <circle cx="1155" cy="305" r="70"/>
+    <path d="M1155 380v260M1065 475h180M1095 820l60-180 65 180"/>
+  </g>
+  <text x="750" y="940" text-anchor="middle" font-family="Arial, sans-serif" font-size="70" font-weight="800" fill="#111">Visual Development</text>
+  <text x="750" y="1010" text-anchor="middle" font-family="Arial, sans-serif" font-size="34" fill="#555">replace this file</text>
+</svg>
