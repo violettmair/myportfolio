@@ -6,6 +6,13 @@ const CATEGORY_FOLDERS = {
   "graphic-design": "artwork/graphic-design",
 };
 
+let galleryResizeHandler = null;
+let lightboxArtwork = [];
+let lightboxIndex = 0;
+let swipeStartX = 0;
+let swipeStartY = 0;
+let swipeStartTime = 0;
+
 function initNavigation() {
   const toggle = document.querySelector("[data-nav-toggle]");
   const nav = document.querySelector("[data-site-nav]");
@@ -174,23 +181,64 @@ function makeArtworkItem(file, folder, categoryTitle, metadata) {
   };
 }
 
-function renderGallery(artwork) {
-  const grid = document.querySelector("[data-gallery-grid]");
-  if (!grid) return;
+function getGalleryColumnCount() {
+  if (window.matchMedia("(max-width: 520px)").matches) return 1;
+  if (window.matchMedia("(max-width: 860px)").matches) return 2;
+  return 3;
+}
 
-  grid.innerHTML = artwork.map((item, index) => `
+function renderArtworkCard(item, index) {
+  return `
     <button class="gallery-item" type="button" data-artwork-index="${index}" aria-label="Open ${escapeHTML(item.title)}">
       <figure>
         <img src="${item.src}" alt="${escapeHTML(item.title)}" loading="lazy" />
         <figcaption>${escapeHTML(item.title)}</figcaption>
       </figure>
     </button>
-  `).join("");
+  `;
+}
+
+function renderGallery(artwork) {
+  const grid = document.querySelector("[data-gallery-grid]");
+  if (!grid) return;
+
+  lightboxArtwork = artwork;
+  const indexedArtwork = artwork.map((item, index) => ({ ...item, originalIndex: index }));
+
+  function renderColumns() {
+    const columnCount = getGalleryColumnCount();
+    const itemsPerColumn = Math.ceil(indexedArtwork.length / columnCount);
+
+    grid.style.setProperty("--gallery-columns", String(columnCount));
+    grid.innerHTML = Array.from({ length: columnCount }, (_, columnIndex) => {
+      const start = columnIndex * itemsPerColumn;
+      const columnItems = indexedArtwork.slice(start, start + itemsPerColumn);
+
+      return `
+        <div class="gallery-column">
+          ${columnItems.map(item => renderArtworkCard(item, item.originalIndex)).join("")}
+        </div>
+      `;
+    }).join("");
+  }
+
+  renderColumns();
+
+  if (galleryResizeHandler) {
+    window.removeEventListener("resize", galleryResizeHandler);
+  }
+
+  galleryResizeHandler = () => {
+    window.clearTimeout(galleryResizeHandler.timeoutId);
+    galleryResizeHandler.timeoutId = window.setTimeout(renderColumns, 120);
+  };
+
+  window.addEventListener("resize", galleryResizeHandler);
 
   grid.addEventListener("click", event => {
     const button = event.target.closest("[data-artwork-index]");
     if (!button) return;
-    openLightbox(artwork[Number(button.dataset.artworkIndex)]);
+    openLightbox(Number(button.dataset.artworkIndex));
   });
 }
 
@@ -200,32 +248,151 @@ function setupLightbox() {
 
   if (!lightbox || !closeButton) return;
 
-  closeButton.addEventListener("click", () => lightbox.close());
+  addCarouselControls(lightbox);
+
+  closeButton.addEventListener("click", () => closeLightbox());
 
   lightbox.addEventListener("click", event => {
     const dialogBox = lightbox.querySelector(".lightbox-inner");
     if (!dialogBox) return;
 
-    const clickedOutside = !dialogBox.contains(event.target) && !event.target.closest("[data-lightbox-close]");
-    if (clickedOutside) lightbox.close();
+    const clickedOutside = !dialogBox.contains(event.target) && !event.target.closest("[data-lightbox-control]") && !event.target.closest("[data-lightbox-close]");
+    if (clickedOutside) closeLightbox();
+  });
+
+  lightbox.addEventListener("pointerdown", event => {
+    if (!lightbox.open || event.target.closest("button")) return;
+    swipeStartX = event.clientX;
+    swipeStartY = event.clientY;
+    swipeStartTime = Date.now();
+  });
+
+  lightbox.addEventListener("pointerup", event => {
+    if (!lightbox.open || event.target.closest("button")) return;
+
+    const deltaX = event.clientX - swipeStartX;
+    const deltaY = event.clientY - swipeStartY;
+    const elapsed = Date.now() - swipeStartTime;
+    const isHorizontalSwipe = Math.abs(deltaX) > 55 && Math.abs(deltaX) > Math.abs(deltaY) * 1.4;
+    const isIntentional = elapsed < 900;
+
+    if (!isHorizontalSwipe || !isIntentional) return;
+
+    if (deltaX < 0) {
+      showNextArtwork();
+    } else {
+      showPreviousArtwork();
+    }
   });
 
   document.addEventListener("keydown", event => {
-    if (event.key === "Escape" && lightbox.open) {
-      lightbox.close();
+    if (!lightbox.open) return;
+
+    if (event.key === "Escape") {
+      closeLightbox();
+    }
+
+    if (event.key === "ArrowLeft") {
+      event.preventDefault();
+      showPreviousArtwork();
+    }
+
+    if (event.key === "ArrowRight") {
+      event.preventDefault();
+      showNextArtwork();
     }
   });
 }
 
-function openLightbox(item) {
+function addCarouselControls(lightbox) {
+  if (lightbox.querySelector("[data-lightbox-prev]")) return;
+
+  const previousButton = document.createElement("button");
+  previousButton.type = "button";
+  previousButton.className = "lightbox-control lightbox-control-prev";
+  previousButton.dataset.lightboxControl = "";
+  previousButton.dataset.lightboxPrev = "";
+  previousButton.setAttribute("aria-label", "Previous artwork");
+  previousButton.innerHTML = "‹";
+
+  const nextButton = document.createElement("button");
+  nextButton.type = "button";
+  nextButton.className = "lightbox-control lightbox-control-next";
+  nextButton.dataset.lightboxControl = "";
+  nextButton.dataset.lightboxNext = "";
+  nextButton.setAttribute("aria-label", "Next artwork");
+  nextButton.innerHTML = "›";
+
+  const hint = document.createElement("p");
+  hint.className = "lightbox-carousel-hint";
+  hint.dataset.lightboxHint = "";
+
+  previousButton.addEventListener("click", showPreviousArtwork);
+  nextButton.addEventListener("click", showNextArtwork);
+
+  lightbox.append(previousButton, nextButton);
+
+  const details = lightbox.querySelector(".lightbox-details");
+  if (details) {
+    details.append(hint);
+  }
+}
+
+function openLightbox(index) {
+  const lightbox = document.querySelector("[data-lightbox]");
+  if (!lightbox || !lightboxArtwork.length) return;
+
+  lightboxIndex = normalizeIndex(index);
+  updateLightboxContent();
+
+  if (!lightbox.open) {
+    lightbox.showModal();
+  }
+}
+
+function closeLightbox() {
+  const lightbox = document.querySelector("[data-lightbox]");
+  if (lightbox?.open) {
+    lightbox.close();
+  }
+}
+
+function normalizeIndex(index) {
+  return (index + lightboxArtwork.length) % lightboxArtwork.length;
+}
+
+function showPreviousArtwork() {
+  if (lightboxArtwork.length <= 1) return;
+  lightboxIndex = normalizeIndex(lightboxIndex - 1);
+  updateLightboxContent("previous");
+}
+
+function showNextArtwork() {
+  if (lightboxArtwork.length <= 1) return;
+  lightboxIndex = normalizeIndex(lightboxIndex + 1);
+  updateLightboxContent("next");
+}
+
+function updateLightboxContent(direction = "") {
   const lightbox = document.querySelector("[data-lightbox]");
   if (!lightbox) return;
+
+  const item = lightboxArtwork[lightboxIndex];
+  if (!item) return;
 
   const image = lightbox.querySelector("[data-lightbox-image]");
   const category = lightbox.querySelector("[data-lightbox-category]");
   const title = lightbox.querySelector("[data-lightbox-title]");
   const description = lightbox.querySelector("[data-lightbox-description]");
   const meta = lightbox.querySelector("[data-lightbox-meta]");
+  const hint = lightbox.querySelector("[data-lightbox-hint]");
+  const previousButton = lightbox.querySelector("[data-lightbox-prev]");
+  const nextButton = lightbox.querySelector("[data-lightbox-next]");
+
+  image.classList.remove("is-moving-next", "is-moving-previous");
+  if (direction) {
+    window.requestAnimationFrame(() => image.classList.add(`is-moving-${direction}`));
+  }
 
   image.src = item.src;
   image.alt = item.title;
@@ -236,7 +403,16 @@ function openLightbox(item) {
   const metaParts = [item.year, item.medium].filter(Boolean);
   meta.textContent = metaParts.length ? metaParts.join(" · ") : item.filename;
 
-  lightbox.showModal();
+  const slideText = `${lightboxIndex + 1} of ${lightboxArtwork.length}`;
+  if (hint) {
+    hint.textContent = `${slideText} · Use arrow keys, click the arrows, or swipe left/right.`;
+  }
+
+  if (previousButton && nextButton) {
+    const hideControls = lightboxArtwork.length <= 1;
+    previousButton.hidden = hideControls;
+    nextButton.hidden = hideControls;
+  }
 }
 
 function escapeHTML(value) {
