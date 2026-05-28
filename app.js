@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-cache-refresh";
+const CACHE_VERSION = "20260528-mobile-lightbox-stability";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
@@ -27,12 +27,14 @@ let lightboxIndex = 0;
 let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeStartTime = 0;
+let pageScrollYBeforeLightbox = 0;
 
 function initNavigation() {
   const toggle = document.querySelector("[data-nav-toggle]");
   const nav = document.querySelector("[data-site-nav]");
+  const menu = document.querySelector("[data-site-menu]") || nav;
 
-  if (!toggle || !nav) return;
+  if (!toggle || !menu) return;
 
   toggle.addEventListener("click", () => {
     const isOpen = document.body.classList.toggle("nav-open");
@@ -40,7 +42,7 @@ function initNavigation() {
     toggle.querySelector(".sr-only").textContent = isOpen ? "Close navigation" : "Open navigation";
   });
 
-  nav.addEventListener("click", event => {
+  menu.addEventListener("click", event => {
     if (event.target.closest("a")) {
       document.body.classList.remove("nav-open");
       toggle.setAttribute("aria-expanded", "false");
@@ -219,10 +221,17 @@ function renderGallery(artwork) {
 
   lightboxArtwork = artwork;
   const indexedArtwork = artwork.map((item, index) => ({ ...item, originalIndex: index }));
+  let renderedColumnCount = 0;
 
-  function renderColumns() {
+  function renderColumns(force = false) {
     const columnCount = getGalleryColumnCount();
 
+    // Mobile browsers resize the viewport while the address bar hides/shows during scroll.
+    // Only rebuild the gallery when the actual column count changes so the list does not
+    // appear to refresh while someone is browsing.
+    if (!force && renderedColumnCount === columnCount && grid.children.length) return;
+
+    renderedColumnCount = columnCount;
     grid.style.setProperty("--gallery-columns", String(columnCount));
     grid.innerHTML = Array.from({ length: columnCount }, (_, columnIndex) => {
       const columnItems = indexedArtwork.filter((_, itemIndex) => itemIndex % columnCount === columnIndex);
@@ -235,7 +244,7 @@ function renderGallery(artwork) {
     }).join("");
   }
 
-  renderColumns();
+  renderColumns(true);
 
   if (galleryResizeHandler) {
     window.removeEventListener("resize", galleryResizeHandler);
@@ -243,7 +252,7 @@ function renderGallery(artwork) {
 
   galleryResizeHandler = () => {
     window.clearTimeout(galleryResizeHandler.timeoutId);
-    galleryResizeHandler.timeoutId = window.setTimeout(renderColumns, 120);
+    galleryResizeHandler.timeoutId = window.setTimeout(() => renderColumns(false), 160);
   };
 
   window.addEventListener("resize", galleryResizeHandler);
@@ -264,6 +273,7 @@ function setupLightbox() {
   addCarouselControls(lightbox);
 
   closeButton.addEventListener("click", () => closeLightbox());
+  lightbox.addEventListener("close", unlockPageScrollForLightbox);
 
   lightbox.addEventListener("click", event => {
     const dialogBox = lightbox.querySelector(".lightbox-inner");
@@ -326,7 +336,7 @@ function addCarouselControls(lightbox) {
   previousButton.dataset.lightboxControl = "";
   previousButton.dataset.lightboxPrev = "";
   previousButton.setAttribute("aria-label", "Previous artwork");
-  previousButton.innerHTML = "‹";
+  previousButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M15 6 9 12l6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   const nextButton = document.createElement("button");
   nextButton.type = "button";
@@ -334,7 +344,7 @@ function addCarouselControls(lightbox) {
   nextButton.dataset.lightboxControl = "";
   nextButton.dataset.lightboxNext = "";
   nextButton.setAttribute("aria-label", "Next artwork");
-  nextButton.innerHTML = "›";
+  nextButton.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M9 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
 
   const hint = document.createElement("p");
   hint.className = "lightbox-carousel-hint";
@@ -351,6 +361,25 @@ function addCarouselControls(lightbox) {
   }
 }
 
+
+function lockPageScrollForLightbox() {
+  if (document.body.classList.contains("lightbox-open")) return;
+
+  pageScrollYBeforeLightbox = window.scrollY || document.documentElement.scrollTop || 0;
+  document.documentElement.classList.add("lightbox-open-root");
+  document.body.style.top = `-${pageScrollYBeforeLightbox}px`;
+  document.body.classList.add("lightbox-open");
+}
+
+function unlockPageScrollForLightbox() {
+  if (!document.body.classList.contains("lightbox-open")) return;
+
+  document.body.classList.remove("lightbox-open");
+  document.documentElement.classList.remove("lightbox-open-root");
+  document.body.style.top = "";
+  window.scrollTo({ top: pageScrollYBeforeLightbox, left: 0, behavior: "auto" });
+}
+
 function openLightbox(index) {
   const lightbox = document.querySelector("[data-lightbox]");
   if (!lightbox || !lightboxArtwork.length) return;
@@ -359,7 +388,10 @@ function openLightbox(index) {
   updateLightboxContent();
 
   if (!lightbox.open) {
+    // Open first, then lock the page. This keeps the dialog centered in the
+    // current viewport instead of making mobile users jump back to the top.
     lightbox.showModal();
+    lockPageScrollForLightbox();
   }
 }
 
@@ -418,7 +450,7 @@ function updateLightboxContent(direction = "") {
 
   const slideText = `${lightboxIndex + 1} of ${lightboxArtwork.length}`;
   if (hint) {
-    hint.textContent = `${slideText} · Use arrow keys, click the arrows, or swipe left/right.`;
+    hint.textContent = slideText;
   }
 
   if (previousButton && nextButton) {
