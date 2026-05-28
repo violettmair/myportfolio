@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-lightbox-square-instagram";
+const CACHE_VERSION = "20260528-popup-pc-text-fixes";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
@@ -28,6 +28,10 @@ let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeStartTime = 0;
 let pageScrollYBeforeLightbox = 0;
+
+function shouldUseSwipeCarousel() {
+  return window.matchMedia("(hover: none), (pointer: coarse)").matches;
+}
 
 function initNavigation() {
   const toggle = document.querySelector("[data-nav-toggle]");
@@ -284,14 +288,14 @@ function setupLightbox() {
   });
 
   lightbox.addEventListener("pointerdown", event => {
-    if (!lightbox.open || event.target.closest("button")) return;
+    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button")) return;
     swipeStartX = event.clientX;
     swipeStartY = event.clientY;
     swipeStartTime = Date.now();
   });
 
   lightbox.addEventListener("pointerup", event => {
-    if (!lightbox.open || event.target.closest("button")) return;
+    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button")) return;
 
     const deltaX = event.clientX - swipeStartX;
     const deltaY = event.clientY - swipeStartY;
