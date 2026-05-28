@@ -1,4 +1,19 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
+const CACHE_VERSION = "20260528-cache-refresh";
+const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
+
+function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
+  if (!src) return src;
+
+  try {
+    const url = new URL(src, window.location.href);
+    url.searchParams.set("v", version);
+    return url.href;
+  } catch {
+    const separator = src.includes("?") ? "&" : "?";
+    return `${src}${separator}v=${encodeURIComponent(version)}`;
+  }
+}
 
 const CATEGORY_FOLDERS = {
   "illustration": "artwork/illustration",
@@ -63,7 +78,7 @@ async function fetchGitHubFolder(folder) {
     throw new Error("This page is not running on GitHub Pages.");
   }
 
-  const endpoint = `https://api.github.com/repos/${repository.owner}/${repository.repo}/contents/${folder}`;
+  const endpoint = `https://api.github.com/repos/${repository.owner}/${repository.repo}/contents/${folder}?cacheBust=${encodeURIComponent(PAGE_LOAD_VERSION)}`;
   const response = await fetch(endpoint, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
 
   if (!response.ok) {
@@ -75,7 +90,7 @@ async function fetchGitHubFolder(folder) {
   return files.map(file => ({
     name: file.name,
     type: file.type,
-    src: file.download_url,
+    src: addCacheBuster(file.download_url, file.sha || PAGE_LOAD_VERSION),
   }));
 }
 
@@ -97,7 +112,7 @@ async function fetchLocalFolder(folder) {
     .map(href => {
       const url = new URL(href, baseUrl);
       const name = decodeURIComponent(url.pathname.split("/").filter(Boolean).pop() || "");
-      return { name, type: "file", src: url.href };
+      return { name, type: "file", src: addCacheBuster(url.href) };
     })
     .filter(file => IMAGE_EXTENSIONS.test(file.name));
 
@@ -128,7 +143,7 @@ async function fetchArtworkFolder(folder) {
 
 async function fetchMetadata() {
   try {
-    const response = await fetch("data/artwork-meta.json", { cache: "no-store" });
+    const response = await fetch(addCacheBuster("data/artwork-meta.json", PAGE_LOAD_VERSION), { cache: "no-store" });
     if (!response.ok) return {};
     return response.json();
   } catch {
@@ -207,12 +222,10 @@ function renderGallery(artwork) {
 
   function renderColumns() {
     const columnCount = getGalleryColumnCount();
-    const itemsPerColumn = Math.ceil(indexedArtwork.length / columnCount);
 
     grid.style.setProperty("--gallery-columns", String(columnCount));
     grid.innerHTML = Array.from({ length: columnCount }, (_, columnIndex) => {
-      const start = columnIndex * itemsPerColumn;
-      const columnItems = indexedArtwork.slice(start, start + itemsPerColumn);
+      const columnItems = indexedArtwork.filter((_, itemIndex) => itemIndex % columnCount === columnIndex);
 
       return `
         <div class="gallery-column">
