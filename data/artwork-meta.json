@@ -1,27 +1,178 @@
 {
   "artwork/illustration/1_space.jpg": {
-    "title": "Space",
-    "description": "This is a test.",
+    "title": "Adventure in Space",
+    "description": "A story about a girl who takes off with her alien friend and robot pet dog to explore the universe.",
     "year": "2026",
     "medium": "Digital"
   },
-"artwork/illustration/2_jellyfish1.JPG": {
-    "title": "jellyfish",
-    "description": "This is also a test.",
-    "year": "2026",
+  "artwork/illustration/2_cave.jpg": {
+    "title": "Alibaba Enters the Cave",
+    "description": "An illustration of Alibaba entering the hidden cave after the bandits left. Part of a Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/3_elephant.jpg": {
+    "title": "The Elephant in The Room",
+    "description": "An illustration of the elephant in the room (literally). An editorial illustration.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/4_newyear.jpg": {
+    "title": "New Year Fireworks",
+    "description": "An illustration celebrating the New year, with cats enjoying the fireworks!",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/5_wonderland.jpg": {
+    "title": "Alice in Wonderland",
+    "description": "An illustration of Alice meeting the Cheshire cat.",
+    "year": "2023",
+    "medium": "Digital"
+  },
+  "artwork/illustration/6_jellyfish1.JPG": {
+    "title": "Jellyfish Evolution 1",
+    "description": "The first part of a sequential illustration project. This part shows an ordinary looking Jellyfish.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/7_jellyfish2.jpg": {
+    "title": "Jellyfish Evolution 2",
+    "description": "The second part of a sequential illustration project. This part shows a Jellyfish that evolved and now has a head, arms, and a torso.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/8_arrival.JPG": {
+    "title": "Arrival in the land of Freedom (Cover)",
+    "description": "The cover of a biographical sequential project. The project is about my family's journey to the US during Covid closures.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/9_arrival1.JPG": {
+    "title": "Arrival in the land of Freedom (Page 1)",
+    "description": "Part 1 of a biographical sequential project about my family's journey to the US during Covid closures. This part shows the beginning of the story, in which we're offloading our luggage to enter the airport.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/10_arrival2.JPG": {
+    "title": "Arrival in the land of Freedom (Page 2)",
+    "description": "Part 2 of a biographical sequential project about my family's journey to the US during Covid closures. This part shows the lowest point of the story, in which we were rejected in transit and sent back without our luggage.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/illustration/11_arrival3.JPG": {
+    "title": "Arrival in the land of Freedom (Page 3)",
+    "description": "Part 3 of a biographical sequential project about my family's journey to the US during Covid closures. This part shows the end of the story, in which we're celebrating our arrival to the US after all the struggles we've been through.",
+    "year": "2025",
     "medium": "Digital"
   },
 
-  "artwork/visual-development/1_sample-character-sheet.svg": {
-    "title": "Sample Character Sheet",
-    "description": "This is a placeholder. Delete it after you upload your own visual development files.",
+  "artwork/visual-development/1_alibaba.jpg": {
+    "title": "Alibaba Character Sheet",
+    "description": "Alibaba's character sheet, including a turnaround, expressions, and an action pose. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/2_hassan.jpg": {
+    "title": "Hassan Character Sheet",
+    "description": "Hassan's character sheet, including a turnaround, expressions, and an action pose. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/3_murjana.jpg": {
+    "title": "Murjana Character Sheet",
+    "description": "Murjana's turnaround. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/4_baba.jpg": {
+    "title": "Baba Mustapha Character Sheet",
+    "description": "Baba Mustapha's turnaround. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/5_son.jpg": {
+    "title": "Alibaba's Son Character Sheet",
+    "description": "Alibaba's son's turnaround. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/6_hchart.jpg": {
+    "title": "Height Chart",
+    "description": "Character color and height comparison chart. Part of the Alibaba Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/7_cave.jpg": {
+    "title": "Alibaba Enters the Cave",
+    "description": "An illustration of Alibaba entering the hidden cave after the bandits left. Part of a Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/8_snake.JPG": {
+    "title": "Mot's Den",
+    "description": "A background design illustration of Mot's throne room in the underground realm. Part of the Baal project.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/9_alibabastreet.jpg": {
+    "title": "Murjana Witnessing The Exchange",
+    "description": "An illustration of Murjana witnessing Baba Mustapha snitching on them to Hassan in exchange for gold. Part of a Visual Development project meant for either children books or animation.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/10_monsterrunway.jpg": {
+    "title": "Monster Runway",
+    "description": "A Frankenstein character illustration project. No specific story for this one, but the concept is based on a mix of Frankenstein with a criticism of plastic surgeries.",
+    "year": "2024",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/11_mot.JPG": {
+    "title": "Mot",
+    "description": "A character illustration of the Ugaritic God of death Mot. Part of the Baal project.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+  "artwork/visual-development/12_baal.JPG": {
+    "title": "Baal",
+    "description": "A character illustration of the Ugaritic God Baal. Part of the Baal project.",
+    "year": "2025",
+    "medium": "Digital"
+  },
+
+  "artwork/graphic-design/1_product.png": {
+    "title": "Geek Con Products",
+    "description": "Samples of vinyl stickers and keychains I made for sale during Geek Con (Syracuse University's comic convention).",
     "year": "2026",
     "medium": "Digital"
   },
-  "artwork/graphic-design/1_sample-poster.svg": {
-    "title": "Sample Poster",
-    "description": "This is a placeholder. Delete it after you upload your own graphic design files.",
-    "year": "2026",
+  "artwork/graphic-design/2_salsalabel.png": {
+    "title": "Salsa",
+    "description": "A product design project focused on making labels and mock ups for a salsa brand.",
+    "year": "2024",
+    "medium": "Digital"
+  },
+  "artwork/graphic-design/3_nasa.jpg": {
+    "title": "Want to Become an Astronaut?",
+    "description": "A graphic design project for a NASA recruitment poster.",
+    "year": "2024",
+    "medium": "Digital"
+  },
+  "artwork/graphic-design/4_rhino.jpg": {
+    "title": "Rhinoceros Play Poster",
+    "description": "A graphic design project for a theatrical play advertisment poster.",
+    "year": "2023",
+    "medium": "Digital"
+  },
+  "artwork/graphic-design/5_uxui.png": {
+    "title": "Gamer Center",
+    "description": "A user interface/experience design project for a social gaming website. Made on Adobe XD.",
+    "year": "2023",
+    "medium": "Digital"
+  },
+  "artwork/graphic-design/6_news.jpg": {
+    "title": "WBOS Morning Edition",
+    "description": "A graphic design project for a morning news program intro screen.",
+    "year": "2023",
     "medium": "Digital"
   }
 }
