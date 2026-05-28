@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-mobile-lightbox-stability";
+const CACHE_VERSION = "20260528-lightbox-square-instagram";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
@@ -448,9 +448,9 @@ function updateLightboxContent(direction = "") {
   const metaParts = [item.year, item.medium].filter(Boolean);
   meta.textContent = metaParts.length ? metaParts.join(" · ") : item.filename;
 
-  const slideText = `${lightboxIndex + 1} of ${lightboxArtwork.length}`;
   if (hint) {
-    hint.textContent = slideText;
+    hint.textContent = "";
+    hint.hidden = true;
   }
 
   if (previousButton && nextButton) {

@@ -1178,3 +1178,81 @@ html.lightbox-open-root {
     height: 23px;
   }
 }
+
+
+/* Final lightbox + cache update fixes (20260528-lightbox-square-instagram) */
+.lightbox {
+  border-radius: 0 !important;
+  overflow: visible !important;
+}
+
+.lightbox-inner {
+  overflow: visible !important;
+  border-radius: 0 !important;
+  min-width: 0;
+}
+
+.lightbox img {
+  width: 100%;
+  height: auto !important;
+  max-height: min(92svh, 900px) !important;
+  object-fit: contain !important;
+  border-radius: 0 !important;
+  background: #111;
+}
+
+.lightbox-details {
+  min-width: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.lightbox-details h2,
+.lightbox-details p {
+  max-width: 100%;
+  overflow-wrap: break-word;
+}
+
+.lightbox-details h2 {
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 1.04;
+  letter-spacing: 0.01em;
+}
+
+.lightbox-carousel-hint {
+  display: none !important;
+}
+
+@media (max-width: 860px) {
+  .lightbox-inner {
+    overflow: visible !important;
+    border-radius: 0 !important;
+  }
+
+  .lightbox img {
+    height: auto !important;
+    max-height: 58svh !important;
+    object-fit: contain !important;
+  }
+
+  .lightbox-details {
+    max-height: 34svh;
+  }
+
+  .lightbox-details h2 {
+    font-size: clamp(1.65rem, 8vw, 2.45rem);
+    line-height: 1.05;
+  }
+}
+
+@media (max-width: 520px) {
+  .lightbox-details {
+    padding: 1rem;
+  }
+
+  .lightbox-details h2 {
+    font-size: clamp(1.45rem, 7vw, 2rem);
+  }
+}
