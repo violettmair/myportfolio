@@ -1546,7 +1546,7 @@ html.lightbox-open-root {
   }
 }
 
-/* Close button fully outside popup box (20260528-close-button-outside) */
+/* Close button fully outside popup box (20260529-close-button-image-safe) */
 .lightbox-close {
   top: -64px !important;
   right: -64px !important;
@@ -1577,5 +1577,90 @@ html.lightbox-open-root {
     right: 0 !important;
     width: 42px !important;
     height: 42px !important;
+  }
+}
+
+/* Close button safer placement update (20260529-close-button-image-safe) */
+.lightbox-close {
+  /* Desktop: keep the close button inside the viewport and near the top-right
+     edge of the image area, instead of outside the whole popup. */
+  top: 14px !important;
+  right: calc(420px + 14px) !important;
+  z-index: 80 !important;
+  transform: none !important;
+}
+
+@media (max-width: 1200px) and (min-width: 861px) {
+  .lightbox-close {
+    right: calc(390px + 14px) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .lightbox-close {
+    /* Mobile: keep the close button in the side margin, not on top of the image. */
+    position: fixed !important;
+    top: calc(env(safe-area-inset-top, 0px) + 12px) !important;
+    right: calc(env(safe-area-inset-right, 0px) + 12px) !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .lightbox-close {
+    top: calc(env(safe-area-inset-top, 0px) + 10px) !important;
+    right: calc(env(safe-area-inset-right, 0px) + 10px) !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
+
+/* Mobile navigation icon polish (20260529-menu-icon-tight)
+   - tighter hamburger spacing
+   - clean open-menu arrow/close mark with no center gap */
+.nav-toggle {
+  position: relative;
+}
+
+.nav-toggle span[aria-hidden="true"] {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 18px;
+  height: 2px;
+  margin: 0;
+  border-radius: 999px;
+  transform: translate(-50%, -50%);
+  transform-origin: center;
+}
+
+.nav-toggle span[aria-hidden="true"]:nth-child(2) {
+  transform: translate(-50%, calc(-50% - 5px));
+}
+
+.nav-toggle span[aria-hidden="true"]:nth-child(3) {
+  transform: translate(-50%, -50%);
+}
+
+.nav-toggle span[aria-hidden="true"]:nth-child(4) {
+  transform: translate(-50%, calc(-50% + 5px));
+}
+
+body.nav-open .nav-toggle span[aria-hidden="true"]:nth-child(2) {
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+body.nav-open .nav-toggle span[aria-hidden="true"]:nth-child(3) {
+  opacity: 0;
+}
+
+body.nav-open .nav-toggle span[aria-hidden="true"]:nth-child(4) {
+  transform: translate(-50%, -50%) rotate(-45deg);
+}
+
+@media (max-width: 860px) {
+  .nav-toggle {
+    place-items: center;
   }
 }
