@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260529-menu-icon-tight";
+const CACHE_VERSION = "20260529-close-button-side-outside";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {

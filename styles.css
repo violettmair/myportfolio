@@ -1616,7 +1616,7 @@ html.lightbox-open-root {
   }
 }
 
-/* Mobile navigation icon polish (20260529-menu-icon-tight)
+/* Mobile navigation icon polish (20260529-close-button-side-outside)
    - tighter hamburger spacing
    - clean open-menu arrow/close mark with no center gap */
 .nav-toggle {
@@ -1662,5 +1662,46 @@ body.nav-open .nav-toggle span[aria-hidden="true"]:nth-child(4) {
 @media (max-width: 860px) {
   .nav-toggle {
     place-items: center;
+  }
+}
+
+/* Close button on the outside right side of the popup, not above or inside it (20260529-close-button-side-outside) */
+.lightbox-close {
+  --close-button-size: 46px;
+  top: 0 !important;
+  right: calc((var(--close-button-size) + 18px) * -1) !important;
+  z-index: 60 !important;
+  width: var(--close-button-size) !important;
+  height: var(--close-button-size) !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+
+@media (max-width: 860px) {
+  .lightbox {
+    width: min(760px, calc(100vw - 6.5rem)) !important;
+  }
+
+  .lightbox-close {
+    --close-button-size: 44px;
+    top: 0 !important;
+    right: calc((var(--close-button-size) + 8px) * -1) !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .lightbox {
+    width: min(760px, calc(100vw - 6rem)) !important;
+  }
+
+  .lightbox-close {
+    --close-button-size: 42px;
+    top: 0 !important;
+    right: calc((var(--close-button-size) + 4px) * -1) !important;
   }
 }
