@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-pinch-image-zoom";
+const CACHE_VERSION = "20260528-close-button-outside";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {

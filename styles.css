@@ -1545,3 +1545,37 @@ html.lightbox-open-root {
     z-index: 2;
   }
 }
+
+/* Close button fully outside popup box (20260528-close-button-outside) */
+.lightbox-close {
+  top: -64px !important;
+  right: -64px !important;
+  z-index: 30 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 46px !important;
+  height: 46px !important;
+  padding: 0 !important;
+  border-radius: 999px !important;
+  line-height: 1 !important;
+  transform: none !important;
+}
+
+@media (max-width: 860px) {
+  .lightbox-close {
+    top: -56px !important;
+    right: 0 !important;
+    width: 44px !important;
+    height: 44px !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .lightbox-close {
+    top: -52px !important;
+    right: 0 !important;
+    width: 42px !important;
+    height: 42px !important;
+  }
+}
