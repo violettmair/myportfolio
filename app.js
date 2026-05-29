@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-design-mobile-zoom";
+const CACHE_VERSION = "20260528-pinch-image-zoom";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
@@ -28,9 +28,21 @@ let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeStartTime = 0;
 let pageScrollYBeforeLightbox = 0;
-let imageTapStartX = 0;
-let imageTapStartY = 0;
-let imageTapStartTime = 0;
+let mobileImageZoomScale = 1;
+let mobileImageZoomX = 0;
+let mobileImageZoomY = 0;
+let mobilePanStartX = 0;
+let mobilePanStartY = 0;
+let mobilePanStartTranslateX = 0;
+let mobilePanStartTranslateY = 0;
+let mobilePinchStartDistance = 0;
+let mobilePinchStartScale = 1;
+let mobilePinchStartCenterX = 0;
+let mobilePinchStartCenterY = 0;
+let mobilePinchStartTranslateX = 0;
+let mobilePinchStartTranslateY = 0;
+const MOBILE_IMAGE_MIN_ZOOM = 1;
+const MOBILE_IMAGE_MAX_ZOOM = 4;
 
 function shouldUseSwipeCarousel() {
   return window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -346,40 +358,163 @@ function setupLightboxImageZoom(lightbox) {
 
   if (!image || !panel) return;
 
-  image.addEventListener("pointerdown", event => {
+  image.addEventListener("dragstart", event => event.preventDefault());
+
+  const blockBrowserZoom = event => {
+    if (shouldUseSwipeCarousel()) event.preventDefault();
+  };
+
+  panel.addEventListener("gesturestart", blockBrowserZoom, { passive: false });
+  panel.addEventListener("gesturechange", blockBrowserZoom, { passive: false });
+  panel.addEventListener("gestureend", blockBrowserZoom, { passive: false });
+
+  panel.addEventListener("touchstart", event => {
     if (!shouldUseSwipeCarousel()) return;
-    imageTapStartX = event.clientX;
-    imageTapStartY = event.clientY;
-    imageTapStartTime = Date.now();
-  });
 
-  image.addEventListener("pointerup", event => {
-    if (!shouldUseSwipeCarousel()) return;
-
-    const deltaX = Math.abs(event.clientX - imageTapStartX);
-    const deltaY = Math.abs(event.clientY - imageTapStartY);
-    const elapsed = Date.now() - imageTapStartTime;
-    const isTap = deltaX < 10 && deltaY < 10 && elapsed < 550;
-
-    if (!isTap) return;
-
-    panel.classList.toggle("is-zoomed");
-    if (!panel.classList.contains("is-zoomed")) {
-      panel.scrollTo({ left: 0, top: 0, behavior: "auto" });
+    if (event.touches.length >= 2) {
+      event.preventDefault();
+      const center = getTouchCenter(event.touches);
+      mobilePinchStartDistance = getTouchDistance(event.touches);
+      mobilePinchStartScale = mobileImageZoomScale;
+      mobilePinchStartCenterX = center.x;
+      mobilePinchStartCenterY = center.y;
+      mobilePinchStartTranslateX = mobileImageZoomX;
+      mobilePinchStartTranslateY = mobileImageZoomY;
+      panel.classList.add("is-pinching");
+      return;
     }
+
+    if (event.touches.length === 1 && mobileImageZoomScale > 1.01) {
+      event.preventDefault();
+      mobilePanStartX = event.touches[0].clientX;
+      mobilePanStartY = event.touches[0].clientY;
+      mobilePanStartTranslateX = mobileImageZoomX;
+      mobilePanStartTranslateY = mobileImageZoomY;
+      panel.classList.add("is-panning");
+    }
+  }, { passive: false });
+
+  panel.addEventListener("touchmove", event => {
+    if (!shouldUseSwipeCarousel()) return;
+
+    if (event.touches.length >= 2) {
+      event.preventDefault();
+      const currentDistance = getTouchDistance(event.touches);
+      if (!mobilePinchStartDistance) return;
+
+      const currentCenter = getTouchCenter(event.touches);
+      const nextScale = clamp(
+        mobilePinchStartScale * (currentDistance / mobilePinchStartDistance),
+        MOBILE_IMAGE_MIN_ZOOM,
+        MOBILE_IMAGE_MAX_ZOOM
+      );
+
+      mobileImageZoomScale = nextScale;
+      mobileImageZoomX = mobilePinchStartTranslateX + (currentCenter.x - mobilePinchStartCenterX);
+      mobileImageZoomY = mobilePinchStartTranslateY + (currentCenter.y - mobilePinchStartCenterY);
+      applyLightboxImageZoom();
+      return;
+    }
+
+    if (event.touches.length === 1 && mobileImageZoomScale > 1.01) {
+      event.preventDefault();
+      mobileImageZoomX = mobilePanStartTranslateX + (event.touches[0].clientX - mobilePanStartX);
+      mobileImageZoomY = mobilePanStartTranslateY + (event.touches[0].clientY - mobilePanStartY);
+      applyLightboxImageZoom();
+    }
+  }, { passive: false });
+
+  panel.addEventListener("touchend", event => {
+    if (!shouldUseSwipeCarousel()) return;
+
+    if (event.touches.length === 0) {
+      panel.classList.remove("is-pinching", "is-panning");
+      mobilePinchStartDistance = 0;
+
+      if (mobileImageZoomScale <= 1.01) {
+        resetLightboxImageZoom();
+      } else {
+        applyLightboxImageZoom();
+      }
+      return;
+    }
+
+    if (event.touches.length === 1 && mobileImageZoomScale > 1.01) {
+      mobilePanStartX = event.touches[0].clientX;
+      mobilePanStartY = event.touches[0].clientY;
+      mobilePanStartTranslateX = mobileImageZoomX;
+      mobilePanStartTranslateY = mobileImageZoomY;
+      panel.classList.remove("is-pinching");
+      panel.classList.add("is-panning");
+    }
+  }, { passive: false });
+
+  panel.addEventListener("touchcancel", () => {
+    panel.classList.remove("is-pinching", "is-panning");
   });
+}
+
+function getTouchDistance(touches) {
+  if (!touches || touches.length < 2) return 0;
+  const dx = touches[0].clientX - touches[1].clientX;
+  const dy = touches[0].clientY - touches[1].clientY;
+  return Math.hypot(dx, dy);
+}
+
+function getTouchCenter(touches) {
+  if (!touches || touches.length < 2) {
+    return { x: 0, y: 0 };
+  }
+
+  return {
+    x: (touches[0].clientX + touches[1].clientX) / 2,
+    y: (touches[0].clientY + touches[1].clientY) / 2,
+  };
+}
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function applyLightboxImageZoom() {
+  const panel = document.querySelector("[data-lightbox-image-panel]");
+  const image = document.querySelector("[data-lightbox-image]");
+  if (!panel || !image) return;
+
+  if (mobileImageZoomScale <= 1.01) {
+    resetLightboxImageZoom();
+    return;
+  }
+
+  panel.classList.add("is-zoomed");
+  image.style.setProperty("--mobile-image-zoom", String(mobileImageZoomScale));
+  image.style.setProperty("--mobile-image-x", `${mobileImageZoomX}px`);
+  image.style.setProperty("--mobile-image-y", `${mobileImageZoomY}px`);
 }
 
 function resetLightboxImageZoom() {
   const panel = document.querySelector("[data-lightbox-image-panel]");
-  if (!panel) return;
+  const image = document.querySelector("[data-lightbox-image]");
 
-  panel.classList.remove("is-zoomed");
-  panel.scrollTo({ left: 0, top: 0, behavior: "auto" });
+  mobileImageZoomScale = 1;
+  mobileImageZoomX = 0;
+  mobileImageZoomY = 0;
+  mobilePinchStartDistance = 0;
+
+  if (panel) {
+    panel.classList.remove("is-zoomed", "is-pinching", "is-panning");
+    panel.scrollTo({ left: 0, top: 0, behavior: "auto" });
+  }
+
+  if (image) {
+    image.style.removeProperty("--mobile-image-zoom");
+    image.style.removeProperty("--mobile-image-x");
+    image.style.removeProperty("--mobile-image-y");
+  }
 }
 
 function isLightboxImageZoomed() {
-  return Boolean(document.querySelector("[data-lightbox-image-panel].is-zoomed"));
+  return mobileImageZoomScale > 1.01 || Boolean(document.querySelector("[data-lightbox-image-panel].is-zoomed"));
 }
 
 function addCarouselControls(lightbox) {

@@ -1258,7 +1258,7 @@ html.lightbox-open-root {
 }
 
 
-/* Popup PC sizing, close-button placement, and text wrapping fixes (20260528-design-mobile-zoom) */
+/* Popup PC sizing, close-button placement, and text wrapping fixes (20260528-pinch-image-zoom) */
 .lightbox {
   width: min(1360px, calc(100vw - 10rem)) !important;
   max-height: min(94svh, 980px) !important;
@@ -1386,7 +1386,7 @@ html.lightbox-open-root {
   }
 }
 
-/* Design label + mobile image zoom update (20260528-design-mobile-zoom) */
+/* Design label + mobile image zoom update (20260528-pinch-image-zoom) */
 .lightbox-inner {
   grid-template-columns: minmax(0, 1fr) minmax(420px, 0.35fr) !important;
 }
@@ -1488,5 +1488,60 @@ html.lightbox-open-root {
     width: auto !important;
     max-width: 100% !important;
     max-height: 58svh !important;
+  }
+}
+
+/* Pinch-only mobile image zoom update (20260528-pinch-image-zoom) */
+@media (max-width: 860px) {
+  .lightbox,
+  .lightbox-inner,
+  .lightbox-image-panel {
+    overflow: visible !important;
+  }
+
+  .lightbox-image-panel {
+    position: relative !important;
+    z-index: 5;
+    touch-action: none !important;
+    -ms-touch-action: none !important;
+    overscroll-behavior: contain;
+    cursor: default !important;
+  }
+
+  .lightbox-image-panel > img,
+  .lightbox-image-panel:not(.is-zoomed) > img,
+  .lightbox-image-panel.is-zoomed > img {
+    width: auto !important;
+    max-width: 100% !important;
+    height: auto !important;
+    max-height: 58svh !important;
+    object-fit: contain !important;
+    transform: translate3d(var(--mobile-image-x, 0px), var(--mobile-image-y, 0px), 0) scale(var(--mobile-image-zoom, 1)) !important;
+    transform-origin: center center !important;
+    will-change: transform;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    touch-action: none !important;
+    cursor: default !important;
+  }
+
+  .lightbox-image-panel.is-zoomed,
+  .lightbox-image-panel.is-pinching,
+  .lightbox-image-panel.is-panning {
+    z-index: 40;
+  }
+
+  .lightbox-image-panel.is-zoomed > img,
+  .lightbox-image-panel.is-pinching > img,
+  .lightbox-image-panel.is-panning > img {
+    position: relative;
+    z-index: 41;
+    pointer-events: auto;
+  }
+
+  .lightbox-details {
+    position: relative;
+    z-index: 2;
   }
 }
