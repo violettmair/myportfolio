@@ -1,6 +1,23 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260529-close-button-side-outside";
+const CACHE_VERSION = "20260529-clean-url";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
+
+function removeVisibleVersionFromUrl() {
+  if (!window.history || !window.location.search.includes("v=")) {
+    return;
+  }
+
+  const url = new URL(window.location.href);
+  if (!url.searchParams.has("v")) {
+    return;
+  }
+
+  url.searchParams.delete("v");
+  const cleanPath = `${url.pathname}${url.search}${url.hash}`;
+  window.history.replaceState({}, document.title, cleanPath);
+}
+
+removeVisibleVersionFromUrl();
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
   if (!src) return src;

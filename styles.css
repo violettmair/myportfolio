@@ -1616,7 +1616,7 @@ html.lightbox-open-root {
   }
 }
 
-/* Mobile navigation icon polish (20260529-close-button-side-outside)
+/* Mobile navigation icon polish (20260529-clean-url)
    - tighter hamburger spacing
    - clean open-menu arrow/close mark with no center gap */
 .nav-toggle {
@@ -1665,7 +1665,7 @@ body.nav-open .nav-toggle span[aria-hidden="true"]:nth-child(4) {
   }
 }
 
-/* Close button on the outside right side of the popup, not above or inside it (20260529-close-button-side-outside) */
+/* Close button on the outside right side of the popup, not above or inside it (20260529-clean-url) */
 .lightbox-close {
   --close-button-size: 46px;
   top: 0 !important;
