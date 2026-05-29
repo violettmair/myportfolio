@@ -1258,7 +1258,7 @@ html.lightbox-open-root {
 }
 
 
-/* Popup PC sizing, close-button placement, and text wrapping fixes (20260528-popup-pc-text-fixes) */
+/* Popup PC sizing, close-button placement, and text wrapping fixes (20260528-design-mobile-zoom) */
 .lightbox {
   width: min(1360px, calc(100vw - 10rem)) !important;
   max-height: min(94svh, 980px) !important;
@@ -1383,5 +1383,110 @@ html.lightbox-open-root {
     right: -16px !important;
     width: 42px !important;
     height: 42px !important;
+  }
+}
+
+/* Design label + mobile image zoom update (20260528-design-mobile-zoom) */
+.lightbox-inner {
+  grid-template-columns: minmax(0, 1fr) minmax(420px, 0.35fr) !important;
+}
+
+.lightbox-image-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  background: #111;
+}
+
+.lightbox-image-panel > img {
+  display: block;
+  width: 100% !important;
+  height: auto !important;
+  max-width: 100% !important;
+  max-height: min(94svh, 980px) !important;
+  object-fit: contain !important;
+  object-position: center center !important;
+  border-radius: 0 !important;
+  background: #111;
+}
+
+.lightbox-details h2,
+.lightbox-details p,
+.lightbox-meta {
+  overflow-wrap: normal !important;
+  word-break: keep-all !important;
+  hyphens: none !important;
+}
+
+.lightbox-details h2 {
+  font-size: clamp(1.75rem, 2.8vw, 3rem) !important;
+  line-height: 1.06 !important;
+}
+
+@media (max-width: 1200px) and (min-width: 861px) {
+  .lightbox-inner {
+    grid-template-columns: minmax(0, 1fr) minmax(390px, 0.38fr) !important;
+  }
+
+  .lightbox-details h2 {
+    font-size: clamp(1.55rem, 2.5vw, 2.65rem) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  body.lightbox-open {
+    touch-action: auto !important;
+  }
+
+  .lightbox-inner {
+    grid-template-columns: 1fr !important;
+  }
+
+  .lightbox-image-panel {
+    max-height: 58svh;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-x pan-y pinch-zoom !important;
+    cursor: zoom-in;
+  }
+
+  .lightbox-image-panel.is-zoomed {
+    align-items: flex-start;
+    justify-content: flex-start;
+    cursor: zoom-out;
+  }
+
+  .lightbox-image-panel.is-zoomed > img {
+    width: 220% !important;
+    max-width: none !important;
+    max-height: none !important;
+    height: auto !important;
+    cursor: zoom-out;
+  }
+
+  .lightbox-details h2 {
+    font-size: clamp(1.24rem, 5.6vw, 2rem) !important;
+    line-height: 1.08 !important;
+  }
+}
+
+@media (max-width: 520px) {
+  .lightbox-image-panel.is-zoomed > img {
+    width: 250% !important;
+  }
+
+  .lightbox-details h2 {
+    font-size: clamp(1.12rem, 5.2vw, 1.7rem) !important;
+  }
+}
+
+@media (max-width: 860px) {
+  .lightbox-image-panel:not(.is-zoomed) > img {
+    width: auto !important;
+    max-width: 100% !important;
+    max-height: 58svh !important;
   }
 }

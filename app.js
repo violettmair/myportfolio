@@ -1,5 +1,5 @@
 const IMAGE_EXTENSIONS = /\.(avif|gif|jpe?g|png|svg|webp)$/i;
-const CACHE_VERSION = "20260528-popup-pc-text-fixes";
+const CACHE_VERSION = "20260528-design-mobile-zoom";
 const PAGE_LOAD_VERSION = `${CACHE_VERSION}-${Date.now()}`;
 
 function addCacheBuster(src, version = PAGE_LOAD_VERSION) {
@@ -28,6 +28,9 @@ let swipeStartX = 0;
 let swipeStartY = 0;
 let swipeStartTime = 0;
 let pageScrollYBeforeLightbox = 0;
+let imageTapStartX = 0;
+let imageTapStartY = 0;
+let imageTapStartTime = 0;
 
 function shouldUseSwipeCarousel() {
   return window.matchMedia("(hover: none), (pointer: coarse)").matches;
@@ -188,6 +191,10 @@ function sortByFileName(a, b) {
   });
 }
 
+function normalizeDisplayCategory(category) {
+  return String(category || "").trim().replace(/^graphic\s+design$/i, "Design");
+}
+
 function makeArtworkItem(file, folder, categoryTitle, metadata) {
   const itemMeta = getMetadataForImage(metadata, folder, file.name);
 
@@ -198,7 +205,7 @@ function makeArtworkItem(file, folder, categoryTitle, metadata) {
     description: itemMeta.description || "Add a description in data/artwork-meta.json when you want this artwork to have custom details.",
     year: itemMeta.year || "",
     medium: itemMeta.medium || "",
-    category: itemMeta.category || categoryTitle,
+    category: normalizeDisplayCategory(itemMeta.category || categoryTitle),
   };
 }
 
@@ -275,6 +282,7 @@ function setupLightbox() {
   if (!lightbox || !closeButton) return;
 
   addCarouselControls(lightbox);
+  setupLightboxImageZoom(lightbox);
 
   closeButton.addEventListener("click", () => closeLightbox());
   lightbox.addEventListener("close", unlockPageScrollForLightbox);
@@ -288,14 +296,14 @@ function setupLightbox() {
   });
 
   lightbox.addEventListener("pointerdown", event => {
-    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button")) return;
+    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button") || isLightboxImageZoomed()) return;
     swipeStartX = event.clientX;
     swipeStartY = event.clientY;
     swipeStartTime = Date.now();
   });
 
   lightbox.addEventListener("pointerup", event => {
-    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button")) return;
+    if (!shouldUseSwipeCarousel() || !lightbox.open || event.target.closest("button") || isLightboxImageZoomed()) return;
 
     const deltaX = event.clientX - swipeStartX;
     const deltaY = event.clientY - swipeStartY;
@@ -329,6 +337,49 @@ function setupLightbox() {
       showNextArtwork();
     }
   });
+}
+
+
+function setupLightboxImageZoom(lightbox) {
+  const image = lightbox.querySelector("[data-lightbox-image]");
+  const panel = lightbox.querySelector("[data-lightbox-image-panel]");
+
+  if (!image || !panel) return;
+
+  image.addEventListener("pointerdown", event => {
+    if (!shouldUseSwipeCarousel()) return;
+    imageTapStartX = event.clientX;
+    imageTapStartY = event.clientY;
+    imageTapStartTime = Date.now();
+  });
+
+  image.addEventListener("pointerup", event => {
+    if (!shouldUseSwipeCarousel()) return;
+
+    const deltaX = Math.abs(event.clientX - imageTapStartX);
+    const deltaY = Math.abs(event.clientY - imageTapStartY);
+    const elapsed = Date.now() - imageTapStartTime;
+    const isTap = deltaX < 10 && deltaY < 10 && elapsed < 550;
+
+    if (!isTap) return;
+
+    panel.classList.toggle("is-zoomed");
+    if (!panel.classList.contains("is-zoomed")) {
+      panel.scrollTo({ left: 0, top: 0, behavior: "auto" });
+    }
+  });
+}
+
+function resetLightboxImageZoom() {
+  const panel = document.querySelector("[data-lightbox-image-panel]");
+  if (!panel) return;
+
+  panel.classList.remove("is-zoomed");
+  panel.scrollTo({ left: 0, top: 0, behavior: "auto" });
+}
+
+function isLightboxImageZoomed() {
+  return Boolean(document.querySelector("[data-lightbox-image-panel].is-zoomed"));
 }
 
 function addCarouselControls(lightbox) {
@@ -401,6 +452,7 @@ function openLightbox(index) {
 
 function closeLightbox() {
   const lightbox = document.querySelector("[data-lightbox]");
+  resetLightboxImageZoom();
   if (lightbox?.open) {
     lightbox.close();
   }
@@ -428,6 +480,8 @@ function updateLightboxContent(direction = "") {
 
   const item = lightboxArtwork[lightboxIndex];
   if (!item) return;
+
+  resetLightboxImageZoom();
 
   const image = lightbox.querySelector("[data-lightbox-image]");
   const category = lightbox.querySelector("[data-lightbox-category]");
