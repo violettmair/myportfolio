@@ -17,7 +17,7 @@
     "year": "2025",
     "medium": "Digital"
   },
-  "artwork/illustration/4_newyear.jpg": {
+  "artwork/illustration/4_newyear.JPG": {
     "title": "New Year Fireworks",
     "description": "An illustration celebrating the New year, with cats enjoying the fireworks!",
     "year": "2025",
@@ -65,6 +65,13 @@
     "year": "2025",
     "medium": "Digital"
   },
+  "artwork/illustration/12_monsterrunway.jpg": {
+    "title": "Monster Runway",
+    "description": "A Frankenstein character illustration project. No specific story for this one, but the concept is based on a mix of Frankenstein with a criticism of plastic surgeries.",
+    "year": "2024",
+    "medium": "Digital"
+  },
+
 
   "artwork/visual-development/1_alibaba.jpg": {
     "title": "Alibaba Character Sheet",
